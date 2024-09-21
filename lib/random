@@ -1,0 +1,115 @@
+//otp logic
+// void _verifyOtp() async {
+//   final otp = _otpControllers.map((controller) => controller.text).join();
+//   if (otp.length == 6) {
+//     try {
+//       final otpValid = await _mobileAuthService.verifyOtp(otp);
+//       if (otpValid) {
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(builder: (context) => OTPScreen()),
+//         );
+//       } else {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Invalid OTP, please try again.')),
+//         );
+//         Navigator.push(
+//           context,
+//             MaterialPageRoute(builder: (context) => MainScreen()
+//             )
+//            //(context) => MobileOTPScreen(phoneNumber: '',)),
+//         );
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error verifying OTP: $e')),
+//       );
+//     }
+//   } else {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Please enter a 6-digit OTP')),
+//     );
+//   }
+
+// void _verifyOtp() async {
+//   final otp = _otpControllers.map((controller) => controller.text).join();
+//   if (otp.length == 6) {
+//     try {
+//       // Ensure that verifyOtp method is correctly checking the OTP
+//       final otpValid = await _mobileAuthService.verifyOtp(otp);
+//       if (otpValid) {
+//         // Navigate to the MainScreen on successful OTP verification
+//         Navigator.pushReplacement(
+//           context,
+//           MaterialPageRoute(builder: (context) => MainScreen()),
+//         );
+//       } else {
+//         // Show a message and stay on the same screen
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Invalid OTP, please try again.')),
+//         );
+//       }
+//     } catch (e) {
+//       // Display error if verification fails
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error verifying OTP: $e')),
+//       );
+//     }
+//   } else {
+//     // Prompt user to enter a valid OTP
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Please enter a 6-digit OTP')),
+//     );
+//   }
+// }
+
+void _sendOtp() async {
+  try {
+    String formattedPhoneNumber = _formatPhoneNumber(widget.phoneNumber);
+    await _mobileAuthService.sendOtp(
+      formattedPhoneNumber,
+          (verificationId, resendToken) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP sent successfully')),
+        );
+      },
+          (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send OTP: ${error.message}')),
+        );
+      },
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to send OTP: $e')),
+    );
+  }
+}
+
+void _verifyOtp() async {
+  final otp = _otpControllers.map((controller) => controller.text).join();
+  if (otp.length == 6) {
+
+      final otpValid = await _mobileAuthService.verifyOtp(otp);
+      if (otpValid) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OTPVerifiedScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid OTP, please try again.')),
+        );
+      }
+
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please enter a 6-digit OTP')),
+    );
+  }
+
+
+
